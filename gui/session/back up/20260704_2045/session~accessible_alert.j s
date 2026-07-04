@@ -1,0 +1,73 @@
+// Wir klinken uns in die globale init-Funktion des Spiels ein.
+// Diese wird erst aufgerufen, wenn ALLE Skripte vollständig geladen wurden!
+if (typeof init !== "undefined")
+{
+    let original_init = init;
+    init = function()
+    {
+        // 1. Lass das Spiel zuerst seine normale Initialisierung durchfuehren
+        original_init();
+
+        // 2. Da jetzt alles fertig geladen ist, existiert handleInputAfterGui garantiert!
+        if (typeof handleInputAfterGui !== "undefined")
+        {
+            let original_handleInputAfterGui = handleInputAfterGui;
+            handleInputAfterGui = function(ev)
+            {
+                if (ev.type === "keydown")
+                {
+                    // DEBUGGER: Zeigt uns im Spiel an, welche Taste gedrueckt wurde
+                    warn("[ACCESSIBLE-DEBUG] Taste gedrueckt: " + ev.key);
+
+                    // Physische Tasten direkt abfangen
+                    if (ev.key === "f11" || ev.key === "F11")
+                    {
+                        triggerAccessibleAlert(true);
+                        return true; // Konsumiert die Taste fuer das Spiel
+                    }
+                    if (ev.key === "f12" || ev.key === "F12")
+                    {
+                        triggerAccessibleAlert(false);
+                        return true;
+                    }
+                }
+                return original_handleInputAfterGui(ev);
+            };
+        }
+    };
+}
+
+function triggerAccessibleAlert(raise)
+{
+    // 1. Sichere die aktuelle Auswahl des Spielers
+    let originalSelection = g_Selection.toList();
+
+    // 2. Finde alle eigenen Gebaeude mit der Eigenschaft "alertRaiser"
+    let myEntities = Engine.GuiInterfaceCall("GetPlayerEntities", { "player": g_ViewedPlayer });
+    let alertRaisers = [];
+    if (myEntities && myEntities.entities)
+    {
+        for (let ent of myEntities.entities)
+        {
+            let state = GetEntityState(ent);
+            if (state && state.alertRaiser)
+                alertRaisers.push(ent);
+        }
+    }
+
+    // 3. Wenn Gebaeude gefunden wurden, loese den Alarm aus oder beende ihn
+    if (alertRaisers.length > 0)
+    {
+        g_Selection.reset();
+        g_Selection.addList(alertRaisers);
+
+        if (raise)
+            raiseAlert();
+        else
+            endOfAlert();
+
+        // 4. Stelle die urspruengliche Auswahl sofort wieder her
+        g_Selection.reset();
+        g_Selection.addList(originalSelection);
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "accessiblealert",
+  "version": "1.0.0",
+  "label": "Accessible Alert",
+    "url": "https://wildfiregames.com/nix",
+  "description": "Fügt globale Hotkeys hinzu, um den Alarm auszulösen, ohne das Dorfzentrum auswählen zu müssen",
+  "dependencies": ["0ad>=0.28.0"]
+}
+
+
