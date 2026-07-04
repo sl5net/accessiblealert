@@ -35,10 +35,17 @@ if (typeof init !== "undefined")
                     }
 
                     // Taste 'w' gedrueckt (sym=119) -> Automatisches Holzhacken fuer selektierte Arbeiter!
-                    if (ev.keysym.sym === 119)
+                    else if (ev.keysym.sym === 119)
                     {
                         warn("[ACCESSIBLE-DEBUG] 'w' erkannt! Suche naechstes Holzvorkommen...");
                         triggerAccessibleGather("tree");
+                        return true; // Konsumiert die Taste fuer das Spiel
+                    }
+
+                    else if (ev.keysym.sym == 102)
+                    {
+                        warn("[ACCESSIBLE-DEBUG] 'f' erkannt! Suche naechstes Fruchtvorkommen...");
+                        triggerAccessibleGather("fruit");
                         return true; // Konsumiert die Taste fuer das Spiel
                     }
                 }
